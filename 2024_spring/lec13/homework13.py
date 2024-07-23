@@ -13,22 +13,16 @@ def extract_stories_from_NPR_text(text):
       both strings.  If the story has no teaser, its teaser should be an empty string.
     '''
     #raise RuntimeError('You need to write this part!')
-    soup = bs4.BeautifulSoup(text, 'html.parser')
+    soup = bs4.BeautifulSoup(text, "html.parser")
     stories = []
-    story_elements = soup.find_all('div', class_='story')
-    for element in story_elements:
-        # Extract title
-        title_tag = element.find('h3', class_='title')
-        if title_tag:
-            title = title_tag.text.strip()
+    for div_tag in soup.find_all('div', 'story-text'):
+        titletag = div_tag.find('h3', 'title')
+        teasertag = div_tag.find('p', 'teaser')
+        
+        if teasertag != None:
+            stories.append((titletag.text, teasertag.text))
         else:
-            continue
-        teaser_tag = element.find('p', class_='teaser')
-        if teaser_tag:
-            teaser = teaser_tag.text.strip()
-        else:
-            teaser = ''
-        stories.append((title, teaser))  
+            stories.append((titletag.text, ""))
     return stories
     
 def read_nth_story(stories, n, filename):
@@ -43,11 +37,4 @@ def read_nth_story(stories, n, filename):
 
     Output: None
     '''
-    #raise RuntimeError('You need to write this part!')
-    if n < 0 or n >= len(stories):
-        raise IndexError('Invalid story index')
-    title, teaser = stories[n]
-    full_text = f'{title}. {teaser}'
-    tts = gTTS(full_text, lang='en')
-    tts.save(filename)
-    print(f'Story {n+1} has been synthesized and saved as {filename}')
+    gtts.gTTS(text=stories[n][0]+" "+stories[n][1], lang="en").save(filename)
