@@ -38,4 +38,3 @@ def read_nth_story(stories, n, filename):
     Output: None
     '''
     gtts.gTTS(text=stories[n][0]+" "+stories[n][1], lang="en").save(filename)
-    
